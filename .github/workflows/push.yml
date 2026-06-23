@@ -7,12 +7,11 @@ jobs:
     
     strategy:
       matrix:
-        python: [3.8]
-        java: [13]
+        python: [3.12]
+        java: [24]
         os: ['ubuntu-latest'] # 
         architecture: ['x64']
         terrier: ['snapshot'] #'5.3', '5.4-SNAPSHOT',
-        transformers: ['==3.0.2', ">=4"] 
 
     runs-on: ${{ matrix.os }}
     steps:
@@ -50,14 +49,11 @@ jobs:
       run: |
         conda install pip
         conda install mkl_fft -y
-        conda install -c pytorch faiss-cpu=1.6.3
-        pip install --upgrade --upgrade-strategy eager git+https://github.com/terrier-org/pyterrier.git#egg=python-terrier
+        conda install -c pytorch -c conda-forge faiss-cpu
+        pip install --upgrade --upgrade-strategy eager git+https://github.com/terrier-org/pyterrier.git#egg=pyterrier torch
         pip install --upgrade --upgrade-strategy eager -r requirements.txt
-        # transformers 3 cant use torch 1.12
-        if [ "${{matrix.transformers}}" == "<4" ]; then pip install torch==1.8.0 setuptools==59.5.0; fi
         #install this software
         pip install --timeout=120 .
-        pip install 'transformers${{matrix.transformers}}'
         pip install --upgrade --upgrade-strategy eager pytest
         conda list
 
